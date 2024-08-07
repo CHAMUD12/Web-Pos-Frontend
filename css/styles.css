@@ -11,3 +11,7 @@ body {
 .section.active {
     display: block;
 }
+
+.new-row {
+    transition: background-color 0.5s ease;
+}
