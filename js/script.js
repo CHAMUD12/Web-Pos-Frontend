@@ -5,7 +5,7 @@ $(document).ready(function() {
         $('.section').removeClass('active');
         $('#' + section).addClass('active');
     });
-
+    // -------------- save customer --------------
     document.getElementById('submitCustomer').addEventListener('click', function() {
         const customerName = document.getElementById('customerName').value;
         const customerAddress = document.getElementById('customerAddress').value;
@@ -37,6 +37,7 @@ $(document).ready(function() {
     });
 });
 
+// -------------- get all customer to table --------------
 $(document).ready(function() {
     // Fetch and display customer data
     function loadCustomers() {
@@ -73,4 +74,29 @@ $(document).ready(function() {
 
     // Poll for new data every 5 seconds
     setInterval(loadCustomers, 5000);
+});
+
+// -------------- search customer --------------
+
+$("#searchCustomer").on("input", function () {
+    var searchValue = $(this).val().toLowerCase();
+    $("#customerTable tr").filter(function () {
+      $(this).toggle($(this).text().toLowerCase().indexOf(searchValue) > -1);
+    });
+  });
+
+  $("#searchCustomer").keypress(function (event) {
+    if (event.which == 13) {
+      var firstVisibleRow = $("#customerTable tr:visible").first();
+      if (firstVisibleRow.length > 0) {
+        var id = firstVisibleRow.data("id");
+        var customerName = firstVisibleRow.find("td:nth-child(2)").text();
+        var customerAddress = firstVisibleRow.find("td:nth-child(3)").text();
+        var customerMobile = firstVisibleRow.find("td:nth-child(4)").text();
+        $("#customerName").val(customerName);
+        $("#customerAddress").val(customerAddress);
+        $("#customerMobile").val(customerMobile);
+        $("#updateCustomer").data("id", id); // Store customer ID for update
+      }
+    }
 });
