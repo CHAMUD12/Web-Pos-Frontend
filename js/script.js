@@ -150,4 +150,10 @@ $(document).ready(function() {
         });
     });
     
+    // Reset form
+    document.getElementById('resetCustomer').addEventListener('click', function() {
+        $('#customerForm')[0].reset();
+        document.getElementById('customerId').value = '';
+    });
+    
 });
