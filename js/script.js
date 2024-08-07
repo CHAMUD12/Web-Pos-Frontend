@@ -123,4 +123,31 @@ $(document).ready(function() {
             }
         }
     });
+
+    // Delete customer
+    document.getElementById('deleteCustomer').addEventListener('click', function() {
+        const customerId = document.getElementById('customerId').value;
+        
+        if (!customerId) {
+            console.error("Customer ID is required for deletion");
+            return;
+        }
+
+        $.ajax({
+            url: `http://localhost:8080/Web_Pos_Backend_war_exploded/customer?id=${customerId}`,
+            type: "DELETE",
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                console.log("Customer deleted successfully:", response);
+                // Optionally, clear the form and refresh the customer list
+                $('#customerForm')[0].reset();
+                document.getElementById('customerId').value = '';
+                loadCustomers();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", status, error);
+            }
+        });
+    });
+    
 });
