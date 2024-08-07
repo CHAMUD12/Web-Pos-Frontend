@@ -5,7 +5,10 @@ $(document).ready(function() {
         $('.section').removeClass('active');
         $('#' + section).addClass('active');
     });
-    // -------------- save customer --------------
+});
+
+$(document).ready(function() {
+    // Save customer
     document.getElementById('submitCustomer').addEventListener('click', function() {
         const customerName = document.getElementById('customerName').value;
         const customerAddress = document.getElementById('customerAddress').value;
@@ -26,7 +29,6 @@ $(document).ready(function() {
             contentType: "application/json; charset=utf-8",
             success: function (response) {
                 console.log("Result :", response);
-                // Assuming response has the format {"id": "generated_id", "result": "success"}
                 const customerId = response.id;
                 document.getElementById('customerId').value = customerId;
             },
@@ -35,10 +37,37 @@ $(document).ready(function() {
             }
         });
     });
-});
 
-// -------------- get all customer to table --------------
-$(document).ready(function() {
+    // Update customer
+    document.getElementById('updateCustomer').addEventListener('click', function() {
+        const customerId = document.getElementById('customerId').value;
+        const customerName = document.getElementById('customerName').value;
+        const customerAddress = document.getElementById('customerAddress').value;
+        const customerMobile = document.getElementById('customerMobile').value;
+
+        const customerData = {
+            name: customerName,
+            address: customerAddress,
+            mobile: customerMobile
+        };
+
+        const customerJSON = JSON.stringify(customerData);
+
+        $.ajax({
+            url: `http://localhost:8080/Web_Pos_Backend_war_exploded/customer?id=${customerId}`,
+            type: "PUT",
+            data: customerJSON,
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                console.log("Customer updated successfully:", response);
+                // Optionally, refresh the customer list or provide feedback to the user
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", status, error);
+            }
+        });
+    });
+
     // Fetch and display customer data
     function loadCustomers() {
         $.ajax({
@@ -57,46 +86,41 @@ $(document).ready(function() {
                         '</tr>';
                     customerTable.append(row);
                 });
-                // Highlight new rows briefly
-                // $('.new-row').css('background-color', '#d4edda');
-                // setTimeout(function() {
-                //     $('.new-row').css('background-color', '');
-                // }, 1000);
             },
             error: function (xhr, status, error) {
                 console.error("Error:", status, error);
             }
         });
     }
-    
+
     // Load customers on page load
     loadCustomers();
 
     // Poll for new data every 5 seconds
     setInterval(loadCustomers, 5000);
-});
 
-// -------------- search customer --------------
-
-$("#searchCustomer").on("input", function () {
-    var searchValue = $(this).val().toLowerCase();
-    $("#customerTable tr").filter(function () {
-      $(this).toggle($(this).text().toLowerCase().indexOf(searchValue) > -1);
+    // Search customer
+    $("#searchCustomer").on("input", function () {
+        var searchValue = $(this).val().toLowerCase();
+        $("#customerTable tr").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(searchValue) > -1);
+        });
     });
-  });
 
-  $("#searchCustomer").keypress(function (event) {
-    if (event.which == 13) {
-      var firstVisibleRow = $("#customerTable tr:visible").first();
-      if (firstVisibleRow.length > 0) {
-        var id = firstVisibleRow.data("id");
-        var customerName = firstVisibleRow.find("td:nth-child(2)").text();
-        var customerAddress = firstVisibleRow.find("td:nth-child(3)").text();
-        var customerMobile = firstVisibleRow.find("td:nth-child(4)").text();
-        $("#customerName").val(customerName);
-        $("#customerAddress").val(customerAddress);
-        $("#customerMobile").val(customerMobile);
-        $("#updateCustomer").data("id", id); // Store customer ID for update
-      }
-    }
+    $("#searchCustomer").keypress(function (event) {
+        if (event.which == 13) {
+            var firstVisibleRow = $("#customerTable tr:visible").first();
+            if (firstVisibleRow.length > 0) {
+                var id = firstVisibleRow.find("td:nth-child(1)").text();
+                var customerName = firstVisibleRow.find("td:nth-child(2)").text();
+                var customerAddress = firstVisibleRow.find("td:nth-child(3)").text();
+                var customerMobile = firstVisibleRow.find("td:nth-child(4)").text();
+                $("#customerId").val(id);
+                $("#customerName").val(customerName);
+                $("#customerAddress").val(customerAddress);
+                $("#customerMobile").val(customerMobile);
+                $("#updateCustomer").data("id", id); // Store customer ID for update
+            }
+        }
+    });
 });
