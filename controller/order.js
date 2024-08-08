@@ -188,4 +188,55 @@ $(document).ready(function() {
 });
 
 
+$('#submitOrder').click(function() {
+    const orderId = $('#orderId').val();
+    const orderDate = $('#orderDate').val();
+    const customerId = $('#orderCustomerId').val();
+    const total = $('#orderTotal').val();
+    const discount = $('#orderDiscount').val();
+    const subTotal = $('#orderSubTotal').val();
+    const cash = $('#orderCash').val();
+    const balance = $('#orderBalance').val();
+    
+    let items = [];
+    $('#selectedItemsTable tr').each(function() {
+        const itemCode = $(this).find('td').eq(0).text();
+        const description = $(this).find('td').eq(1).text(); // Assuming description is in the second column
+        const price = $(this).find('td').eq(2).text();
+        const quantity = $(this).find('td').eq(3).text();
+        
+        items.push({
+            code: itemCode,
+            description: description,
+            price: parseFloat(price),
+            qty: parseInt(quantity)
+        });
+    });
+
+    const orderData = {
+        orderId: orderId,
+        orderDate: orderDate,
+        customerId: customerId,
+        total: parseFloat(total),
+        discount: parseFloat(discount),
+        subTotal: parseFloat(subTotal),
+        cash: parseFloat(cash),
+        balance: parseFloat(balance),
+        items: items
+    };
+
+    $.ajax({
+        url: 'http://localhost:8080/Web_Pos_Backend_war_exploded/orders',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(orderData),
+        success: function(response) {
+            alert(response);
+            location.reload(); // Reload the page to reset the form
+        },
+        error: function(xhr, status, error) {
+            alert("Failed to place order: " + error);
+        }
+    });
+});
 
